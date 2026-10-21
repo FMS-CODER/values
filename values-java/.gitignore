@@ -1,5 +1,7 @@
 HELP.md
 target/
+# 运行期日志由 logback 写入，不进版本库
+logs/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
