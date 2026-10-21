@@ -15,8 +15,8 @@ import { HttpError } from '@/services/http'
 import { FOOD_DATA_CENTRAL_URL, NUTRIENT_RULE_URL } from '@/constants/external-links'
 import type { FoodDetail } from '@/types/food'
 import { categoryTone } from '@/utils/category-tone'
-import { nutrientTone } from '@/utils/nutrient-tone'
-import { handleFoodImageError } from '@/utils/image'
+import { NUTRIENT_GROUPS, nutrientGroupTone } from '@/utils/nutrient-tone'
+import { handleFoodImageError, resolveFoodImage } from '@/utils/image'
 
 const route = useRoute()
 
@@ -31,10 +31,27 @@ const notFound = ref(false)
 
 const tone = computed(() => (food.value ? categoryTone(food.value.categoryCode) : ''))
 
+// 图片地址可能为 null，统一解析为占位图，避免 img 取到空字符串
+const imageSrc = computed(() => resolveFoodImage(food.value?.imageUrl ?? null))
+
 /** 热量块的数值取自营养卡片中 code 为 ENERGY 的那项，避免在页面里重复硬编码热量 */
 const energyTile = computed(
   () => food.value?.nutrientTiles.find((item) => item.code === 'ENERGY') ?? null,
 )
+
+/**
+ * 详情页营养素按 group 分组展示。
+ * 顺序由 NUTRIENT_GROUPS 固定，组内保持接口返回顺序（后端已按 sort_order 排好），前端不再重排；
+ * 只有含内容的组才会渲染——部分食物营养素很少，例如橄榄油只有脂肪酸、加碘食盐只有矿物质。
+ */
+const nutrientGroups = computed(() => {
+  const tiles = food.value?.nutrientTiles ?? []
+
+  return NUTRIENT_GROUPS.map((group) => ({
+    ...group,
+    tiles: tiles.filter((item) => item.group === group.code),
+  })).filter((group) => group.tiles.length > 0)
+})
 
 async function loadDetail() {
   const id = Number(route.params.id)
@@ -83,7 +100,7 @@ watch(() => route.params.id, loadDetail, { immediate: true })
         <div class="detail-hero__media">
           <img
             class="detail-hero__image"
-            :src="food.imageUrl"
+            :src="imageSrc"
             :alt="food.name"
             width="176"
             height="176"
@@ -94,12 +111,14 @@ watch(() => route.params.id, loadDetail, { immediate: true })
         <div class="detail-hero__body">
           <div class="detail-hero__badges">
             <span class="category-tag" :class="tone">{{ food.categoryName }}</span>
-            <span class="state-badge">{{ food.state }}</span>
+            <!-- 状态可能为 null，为空时不渲染徽标，避免出现空胶囊 -->
+            <span v-if="food.state" class="state-badge">{{ food.state }}</span>
             <span v-if="!food.source.verified" class="state-badge state-badge--pending">待校验</span>
           </div>
 
           <h1 class="detail-hero__name">{{ food.name }}</h1>
-          <p class="detail-hero__desc">{{ food.description }}</p>
+          <!-- 介绍可能为 null，为空时整段不渲染 -->
+          <p v-if="food.description" class="detail-hero__desc">{{ food.description }}</p>
 
           <p class="detail-hero__meta">
             <span>示例数据 · {{ NUTRIENT_BASIS }}</span>
@@ -111,8 +130,9 @@ watch(() => route.params.id, loadDetail, { immediate: true })
           </p>
 
           <div class="detail-energy">
-            <span class="detail-energy__value">{{ energyTile?.amount }}</span>
-            <span class="detail-energy__unit">{{ energyTile?.unit }}</span>
+            <!-- 部分食物（如加碘食盐）没有热量项，用「—」占位而不是留空 -->
+            <span class="detail-energy__value">{{ energyTile?.amount ?? '—' }}</span>
+            <span class="detail-energy__unit">{{ energyTile?.unit ?? '' }}</span>
             <span class="detail-energy__label">每 100g 热量</span>
           </div>
         </div>
@@ -131,21 +151,32 @@ watch(() => route.params.id, loadDetail, { immediate: true })
               </span>
             </div>
 
-            <div class="nutrient-tiles">
-              <div
-                v-for="item in food.nutrientTiles"
-                :key="item.code"
-                class="nutrient-tile"
-                :class="nutrientTone(item.code)"
+            <!-- 按组展示：顺序固定，缺项的组不渲染；组内沿用接口顺序 -->
+            <div class="nutrient-groups">
+              <section
+                v-for="group in nutrientGroups"
+                :key="group.code"
+                class="nutrient-group"
               >
-                <p class="nutrient-tile__name">{{ item.name }}</p>
-                <p class="nutrient-tile__value">
-                  {{ item.amount }}<span>{{ item.unit }}</span>
-                </p>
-                <p class="nutrient-tile__nrv">
-                  {{ item.nrvPercent === null ? '无 NRV' : `NRV ${item.nrvPercent}%` }}
-                </p>
-              </div>
+                <h3 class="nutrient-group__title">{{ group.title }}</h3>
+                <div class="nutrient-tiles">
+                  <!-- 详情页营养格按组配色（4 组 4 色），不再按营养素 code 一色一码 -->
+                  <div
+                    v-for="item in group.tiles"
+                    :key="item.code"
+                    class="nutrient-tile"
+                    :class="nutrientGroupTone(group.code)"
+                  >
+                    <p class="nutrient-tile__name">{{ item.name }}</p>
+                    <p class="nutrient-tile__value">
+                      {{ item.amount }}<span>{{ item.unit }}</span>
+                    </p>
+                    <p class="nutrient-tile__nrv">
+                      {{ item.nrvPercent === null ? '无 NRV' : `NRV ${item.nrvPercent}%` }}
+                    </p>
+                  </div>
+                </div>
+              </section>
             </div>
           </section>
 
@@ -202,7 +233,7 @@ watch(() => route.params.id, loadDetail, { immediate: true })
                 <dt>计量基准</dt>
                 <dd>{{ NUTRIENT_BASIS }}</dd>
               </div>
-              <div>
+              <div v-if="food.state">
                 <dt>食品状态</dt>
                 <dd>{{ food.state }}</dd>
               </div>

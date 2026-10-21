@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    前台只读查询：结果用 resultMap 的 constructor 直接写进仓储层已有的行 record。
+
+    为什么显式写 javaType：
+    1. record 只能走构造器映射，MyBatis 需要按参数类型找到对应的 TypeHandler；
+    2. 基础类型的别名带下划线前缀（_long/_int/_boolean），写 "long" 会被解析成包装类，
+       构造器签名对不上就会抛 "no constructor found"；
+    3. 日期字段显式声明 java.time.LocalDate，确保走 JSR-310 处理器而不是 java.sql.Date。
+-->
+<mapper namespace="ming.valuesjava.mapper.FoodQueryMapper">
+
+    <resultMap id="CategoryRowMap" type="ming.valuesjava.repository.FoodQueryRepository$CategoryRow">
+        <constructor>
+            <arg column="code" javaType="java.lang.String"/>
+            <arg column="name" javaType="java.lang.String"/>
+            <arg column="sort_order" javaType="_int"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="FoodSummaryRowMap" type="ming.valuesjava.repository.FoodQueryRepository$FoodSummaryRow">
+        <constructor>
+            <arg column="id" javaType="_long"/>
+            <arg column="name" javaType="java.lang.String"/>
+            <arg column="category_code" javaType="java.lang.String"/>
+            <arg column="category_name" javaType="java.lang.String"/>
+            <arg column="image_url" javaType="java.lang.String"/>
+            <arg column="description" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="CardNutrientRowMap" type="ming.valuesjava.repository.FoodQueryRepository$CardNutrientRow">
+        <constructor>
+            <arg column="food_id" javaType="_long"/>
+            <arg column="code" javaType="java.lang.String"/>
+            <arg column="name" javaType="java.lang.String"/>
+            <arg column="unit" javaType="java.lang.String"/>
+            <arg column="amount" javaType="java.math.BigDecimal"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="FoodDetailRowMap" type="ming.valuesjava.repository.FoodQueryRepository$FoodDetailRow">
+        <constructor>
+            <arg column="id" javaType="_long"/>
+            <arg column="name" javaType="java.lang.String"/>
+            <arg column="category_code" javaType="java.lang.String"/>
+            <arg column="category_name" javaType="java.lang.String"/>
+            <arg column="image_url" javaType="java.lang.String"/>
+            <arg column="description" javaType="java.lang.String"/>
+            <arg column="state" javaType="java.lang.String"/>
+            <arg column="claim_note" javaType="java.lang.String"/>
+            <arg column="source_record_id" javaType="java.lang.String"/>
+            <arg column="verified" javaType="_boolean"/>
+            <arg column="source_note" javaType="java.lang.String"/>
+            <arg column="source_name" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="NutrientTileRowMap" type="ming.valuesjava.repository.FoodQueryRepository$NutrientTileRow">
+        <constructor>
+            <arg column="nutrient_code" javaType="java.lang.String"/>
+            <arg column="nutrient_name" javaType="java.lang.String"/>
+            <arg column="unit" javaType="java.lang.String"/>
+            <arg column="nutrient_group" javaType="java.lang.String"/>
+            <arg column="amount" javaType="java.math.BigDecimal"/>
+            <arg column="nrv_percent" javaType="java.math.BigDecimal"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="HighlightRowMap" type="ming.valuesjava.repository.FoodQueryRepository$HighlightRow">
+        <constructor>
+            <arg column="nutrient_code" javaType="java.lang.String"/>
+            <arg column="nutrient_name" javaType="java.lang.String"/>
+            <arg column="unit" javaType="java.lang.String"/>
+            <arg column="amount" javaType="java.math.BigDecimal"/>
+            <arg column="rich_rule_type" javaType="java.lang.String"/>
+            <arg column="rich_threshold_percent" javaType="java.math.BigDecimal"/>
+            <arg column="rich_threshold_per_100g" javaType="java.math.BigDecimal"/>
+            <arg column="rule_note" javaType="java.lang.String"/>
+            <arg column="nrv_percent" javaType="java.math.BigDecimal"/>
+            <arg column="role" javaType="java.lang.String"/>
+            <arg column="source_name" javaType="java.lang.String"/>
+            <arg column="source_url" javaType="java.lang.String"/>
+            <arg column="verified_at" javaType="java.time.LocalDate"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="RuleStandardRowMap" type="ming.valuesjava.repository.FoodQueryRepository$RuleStandardRow">
+        <constructor>
+            <arg column="name" javaType="java.lang.String"/>
+            <arg column="effective_date" javaType="java.time.LocalDate"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findCategories" resultMap="CategoryRowMap">
+        SELECT code, name, sort_order
+        FROM food_category
+        ORDER BY sort_order
+    </select>
+
+    <select id="findFoodSummaries" resultMap="FoodSummaryRowMap">
+        SELECT f.id, f.name, c.code AS category_code, c.name AS category_name, f.image_url, f.description
+        FROM food f
+        JOIN food_category c ON c.id = f.category_id
+        ORDER BY f.id
+    </select>
+
+    <!--
+        卡片营养素：从 food 与 nutrient_info 出发左连接 food_nutrient，
+        保证每个食物都稳定返回 show_in_card 的 4 个槽位。
+        少数食物在 USDA 源数据里缺热量/蛋白等字段（如油、盐），若按内连接，
+        这些食物的卡片项会少于 4 个，前端无法按「缺项显示 —」渲染；
+        左连接后缺失槽位的 amount 为 null，由前端决定展示形态。
+    -->
+    <select id="findCardNutrients" resultMap="CardNutrientRowMap">
+        SELECT f.id AS food_id, ni.code, ni.name, ni.unit, fn.amount
+        FROM food f
+        JOIN nutrient_info ni ON ni.show_in_card = 1
+        LEFT JOIN food_nutrient fn
+               ON fn.food_id = f.id AND fn.nutrient_code = ni.code AND fn.basis_type = '100G'
+        ORDER BY f.id, ni.sort_order
+    </select>
+
+    <select id="findFoodDetail" resultMap="FoodDetailRowMap">
+        SELECT f.id, f.name, c.code AS category_code, c.name AS category_name, f.image_url, f.description,
+               f.state, f.claim_note, f.source_record_id, f.verified, f.source_note, ds.name AS source_name
+        FROM food f
+        JOIN food_category c ON c.id = f.category_id
+        JOIN data_source ds ON ds.id = f.source_id
+        WHERE f.id = #{foodId}
+    </select>
+
+    <!-- NRV% 与分组已由视图算好，Java 侧只做格式化，避免两处口径不一致 -->
+    <select id="findNutrientTiles" resultMap="NutrientTileRowMap">
+        SELECT nutrient_code, nutrient_name, unit, nutrient_group, amount, nrv_percent
+        FROM v_food_nutrient_nrv
+        WHERE food_id = #{foodId}
+        ORDER BY sort_order
+    </select>
+
+    <select id="findHighlights" resultMap="HighlightRowMap">
+        SELECT nutrient_code, nutrient_name, unit, amount, rich_rule_type, rich_threshold_percent,
+               rich_threshold_per_100g, rule_note, nrv_percent, role, source_name, source_url, verified_at
+        FROM v_food_highlight
+        WHERE food_id = #{foodId}
+        ORDER BY sort_order
+    </select>
+
+    <!-- 标准编码是固定字典值，不是用户输入，直接写字面量不需要占位符 -->
+    <select id="findRuleStandard" resultMap="RuleStandardRowMap">
+        SELECT name, effective_date
+        FROM rule_source
+        WHERE code = 'GB_28050_2025'
+    </select>
+
+</mapper>

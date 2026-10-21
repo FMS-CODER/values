@@ -15,7 +15,11 @@ export interface CardNutrient {
   code: string
   name: string
   unit: string
-  amount: number
+  /**
+   * 含量可能为 null：接口固定返回 4 个槽位，但 USDA 源数据本身缺少该项，
+   * 后端不对缺失值做填充，前端需按「无数据」处理而不是当作 0。
+   */
+  amount: number | null
 }
 
 /** 食物列表项，对应 GET /api/foods 的元素 */
@@ -24,8 +28,10 @@ export interface FoodSummary {
   name: string
   categoryCode: string
   categoryName: string
-  imageUrl: string
-  description: string
+  /** 仅人工整理的少量食物有配图，USDA 批量数据无图片，故可能为 null */
+  imageUrl: string | null
+  /** USDA 批量数据没有中文介绍，故可能为 null；为空时列表卡片不渲染该行 */
+  description: string | null
   nutrients: CardNutrient[]
 }
 
@@ -35,6 +41,11 @@ export interface NutrientTile {
   name: string
   unit: string
   amount: number
+  /**
+   * 营养素所属分组，取值 PROXIMATE / VITAMIN / MINERAL / FATTY_ACID。
+   * 后端只返回英文 code，中文标题由前端映射；详情页据此分组展示并按组配色。
+   */
+  group: string
   /** 没有规定 NRV 的营养素为 null，页面显示「无 NRV」 */
   nrvPercent: number | null
 }
@@ -82,10 +93,15 @@ export interface FoodDetail {
   name: string
   categoryCode: string
   categoryName: string
-  imageUrl: string
-  description: string
-  /** 食品状态用于明确计量口径，例如「生，带皮」「熟」 */
-  state: string
+  /** 同列表项：USDA 批量数据无配图，为空时详情页展示本地占位图 */
+  imageUrl: string | null
+  /** 同列表项：为空时详情页不渲染介绍段落 */
+  description: string | null
+  /**
+   * 食品状态用于明确计量口径，例如「生，带皮」「熟」。
+   * 部分来源数据未标注状态，此时为 null，详情页不渲染状态徽标。
+   */
+  state: string | null
   /** 该食物需要单独说明的营养声称提示，后端可能返回 null，为空时不展示该段 */
   claimNote: string | null
   source: FoodSource

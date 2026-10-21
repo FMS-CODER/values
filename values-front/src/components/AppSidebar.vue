@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { Apple, House, Leaf } from 'lucide-vue-next'
+import { Apple, Bot, House, Leaf } from 'lucide-vue-next'
 
 const route = useRoute()
 
 const isHome = computed(() => route.path === '/')
 const isFoods = computed(() => route.path.startsWith('/foods'))
+const isAssistant = computed(() => route.path.startsWith('/assistant'))
 </script>
 
 <template>
@@ -34,6 +35,15 @@ const isFoods = computed(() => route.path.startsWith('/foods'))
       >
         <Apple aria-hidden="true" />
         <span>食物</span>
+      </RouterLink>
+      <RouterLink
+        to="/assistant"
+        class="nav-item"
+        :class="{ 'is-active': isAssistant }"
+        :aria-current="isAssistant ? 'page' : undefined"
+      >
+        <Bot aria-hidden="true" />
+        <span>AI 助手</span>
       </RouterLink>
     </nav>
 

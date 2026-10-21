@@ -19,10 +19,32 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- 只读查询使用 JdbcTemplate，不引入 MyBatis/JPA，保持依赖面最小 -->
+        <!--
+            持久层改用 MyBatis-Plus：联表/视图查询需要把结果映射到仓储层已有的行 record，
+            XML 的 resultMap constructor 映射比 JdbcTemplate 手写 RowMapper 更集中、更易审查；
+            单表 CRUD 直接复用 BaseMapper，省掉重复的 SQL。
+            仍保留 starter-jdbc：DataSource 自动配置、事务管理器与异常翻译都由它提供，
+            MyBatis-Plus starter 本身并不替代这些基础设施。
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>3.5.12</version>
+        </dependency>
+
+        <!--
+            3.5.9 起分页插件从核心包拆到 jsqlparser 模块，PaginationInnerInterceptor 在这个包里；
+            不引入它会在编译期找不到类。用 JSqlParser 5.x 版本，与 Java 17 适配。
+        -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
+            <version>3.5.12</version>
         </dependency>
 
         <!-- MySQL 驱动只在运行期需要，编译期不依赖具体实现，故 scope 设为 runtime -->

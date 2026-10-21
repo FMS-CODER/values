@@ -1,16 +1,24 @@
 /**
  * 分类 code → 分类标签配色类名。
  * 配色沿用 main.css 中既有的 .category-tag.is-* 定义，这里只做 code 到类名的映射。
+ * 分类由 9 类扩到 16 类，这里补齐全部 code，避免任何分类掉进无样式的默认外观。
  */
 const CATEGORY_TONES: Record<string, string> = {
   VEGETABLE: 'is-vegetable',
   FRUIT: 'is-fruit',
   GRAIN: 'is-grain',
-  MEAT: 'is-meat',
+  LEGUME: 'is-legume',
+  NUT_SEED: 'is-nut-seed',
   EGG: 'is-egg',
-  SOY: 'is-soy',
   DAIRY: 'is-dairy',
-  NUT: 'is-nut',
+  FISH: 'is-fish',
+  MEAT: 'is-meat',
+  POULTRY: 'is-poultry',
+  OIL_FAT: 'is-oil-fat',
+  SPICE_HERB: 'is-spice-herb',
+  BEVERAGE: 'is-beverage',
+  SOUP_SAUCE: 'is-soup-sauce',
+  BAKED_SWEET: 'is-baked-sweet',
   OTHER: 'is-other',
 }
 

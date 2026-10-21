@@ -1,0 +1,24 @@
+{
+  "_note": "每个食物保留哪些营养素的筛选阈值。目的是让详情页只出现有意义的数值，避免堆砌大量 0 值或痕量成分。",
+  "drop_non_positive": true,
+  "nrv_percent_min": 1.0,
+  "absolute_min": {
+    "_why": "这 5 项在 nutrient_info 里没有 NRV（nrv_value 为空），无法用 NRV% 判断，改用绝对下限（单位统一为 g/100g）。其余无 NRV 项不存在。",
+    "SUGAR": 0.5,
+    "WATER": 1.0,
+    "MONOUNSATURATED_FAT": 0.5,
+    "POLYUNSATURATED_FAT": 0.5,
+    "TRANS_FAT": 0.1
+  },
+  "never_drop_show_in_card": true,
+  "_never_drop_why": "nutrient_info.show_in_card=1 的热量/蛋白质/脂肪/碳水化合物是列表卡片固定展示项，无论多低都必须保留，也不参与总量截断。",
+  "group_caps": {
+    "PROXIMATE": 7,
+    "VITAMIN": 6,
+    "MINERAL": 6,
+    "FATTY_ACID": 3
+  },
+  "_group_caps_why": "PROXIMATE 共 7 项全部保留；VITAMIN/MINERAL 按 NRV% 降序各取前 6（无 NRV 的排最后）；FATTY_ACID 取前 3（无 NRV 的按 sort_order 靠前）。",
+  "total_cap": 18,
+  "_total_cap_why": "单食物项数上限 18。若超过，只从 VITAMIN/MINERAL/FATTY_ACID 里按 NRV% 从低到高截断，PROXIMATE 与 show_in_card 项不动。"
+}

@@ -1,0 +1,32 @@
+{
+  "_note": "USDA foodCategory.description → 本库 food_category.code 的映射。先按分类名给默认值，再用 description 关键词覆盖。关键词覆盖只对 scope 指定的 USDA 分类生效，避免 'eggplant'（茄子，属蔬菜分类）被 'egg' 误判为蛋类。",
+  "default_by_category": {
+    "Vegetables and Vegetable Products": "VEGETABLE",
+    "Fruits and Fruit Juices": "FRUIT",
+    "Cereal Grains and Pasta": "GRAIN",
+    "Legumes and Legume Products": "LEGUME",
+    "Nut and Seed Products": "NUT_SEED",
+    "Dairy and Egg Products": "DAIRY",
+    "Finfish and Shellfish Products": "FISH",
+    "Beef Products": "MEAT",
+    "Pork Products": "MEAT",
+    "Lamb, Veal, and Game Products": "MEAT",
+    "Sausages and Luncheon Meats": "MEAT",
+    "Poultry Products": "POULTRY",
+    "Fats and Oils": "OIL_FAT",
+    "Spices and Herbs": "SPICE_HERB",
+    "Beverages": "BEVERAGE",
+    "Soups, Sauces, and Gravies": "SOUP_SAUCE",
+    "Baked Products": "BAKED_SWEET",
+    "Sweets": "BAKED_SWEET"
+  },
+  "keyword_overrides": [
+    {
+      "scope_category": "Dairy and Egg Products",
+      "pattern": "egg",
+      "to": "EGG",
+      "_note": "蛋类与奶制品共用 USDA 分类，唯一需要关键词区分的地方：description 含 egg → EGG。"
+    }
+  ],
+  "fallback": "OTHER"
+}

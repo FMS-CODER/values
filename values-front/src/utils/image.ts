@@ -1,5 +1,14 @@
 /** 食物图片缺失时统一使用的本地占位图 */
-const FOOD_IMAGE_FALLBACK = '/foods/placeholder.svg'
+export const FOOD_IMAGE_FALLBACK = '/foods/placeholder.svg'
+
+/**
+ * 把可能为空的图片地址解析成可直接用于 src 的字符串。
+ * 为空时直接给占位图路径，而不是空字符串——空字符串会让浏览器把当前页面地址当作图片请求，
+ * 触发一次失败加载并显示破图标，还会污染控制台。
+ */
+export function resolveFoodImage(url: string | null): string {
+  return url || FOOD_IMAGE_FALLBACK
+}
 
 /**
  * 食物图片加载失败时的兜底处理。

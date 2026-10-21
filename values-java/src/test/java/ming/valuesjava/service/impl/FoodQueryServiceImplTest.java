@@ -56,8 +56,10 @@ class FoodQueryServiceImplTest {
     void normalize_outputsPlainNumberWithoutScientificNotation() {
         stubDetail();
         when(repository.findNutrientTiles(2L)).thenReturn(List.of(
-                new NutrientTileRow("ENERGY", "热量", "kcal", new BigDecimal("34.0000"), new BigDecimal("1.7")),
-                new NutrientTileRow("FIBER", "膳食纤维", "g", new BigDecimal("2.4000"), new BigDecimal("9.6"))));
+                new NutrientTileRow("ENERGY", "热量", "kcal", "PROXIMATE", new BigDecimal("34.0000"),
+                        new BigDecimal("1.7")),
+                new NutrientTileRow("FIBER", "膳食纤维", "g", "PROXIMATE", new BigDecimal("2.4000"),
+                        new BigDecimal("9.6"))));
         when(repository.findHighlights(2L)).thenReturn(List.of());
 
         FoodDetailDto detail = service.getFoodDetail(2L);
@@ -69,6 +71,10 @@ class FoodQueryServiceImplTest {
         assertThat(detail.nutrientTiles())
                 .extracting(tile -> tile.nrvPercent().toPlainString())
                 .containsExactly("1.7", "9.6");
+        // group 由后端原样透传稳定的分组代码，中文映射在前端完成
+        assertThat(detail.nutrientTiles())
+                .extracting(tile -> tile.group())
+                .containsExactly("PROXIMATE", "PROXIMATE");
     }
 
     @Test

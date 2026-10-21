@@ -59,6 +59,7 @@ public class FoodQueryServiceImpl implements FoodQueryService {
     public List<FoodSummaryDto> listFoods() {
         List<FoodSummaryRow> foods = foodQueryRepository.findFoodSummaries();
         // 先按 food_id 把卡片营养素归组，避免对每条食物再发起一次查询（N+1）
+        // normalize 已处理 null（缺项槽位），全程保持 BigDecimal 引用类型，不做自动拆箱
         Map<Long, List<NutrientAmountDto>> nutrientsByFood = new HashMap<>();
         for (CardNutrientRow row : foodQueryRepository.findCardNutrients()) {
             nutrientsByFood
@@ -96,6 +97,8 @@ public class FoodQueryServiceImpl implements FoodQueryService {
                     row.code(),
                     row.name(),
                     row.unit(),
+                    // group 只做透传：后端不拼中文组名，顺序与文案由前端按 PROXIMATE/VITAMIN/MINERAL/FATTY_ACID 映射
+                    row.group(),
                     normalize(row.amount()),
                     // nrvPercent 由视图 ROUND(...,1) 得到，本身就是 1 位小数（如 41.0），保持原样与契约示例一致
                     row.nrvPercent()));

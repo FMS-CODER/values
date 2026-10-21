@@ -1,0 +1,814 @@
+[
+  {
+    "fdc_id": 747447,
+    "category_code": "VEGETABLE",
+    "name_zh": "西兰花",
+    "description": "十字花科蔬菜，富含维生素C与膳食纤维。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2258586,
+    "category_code": "VEGETABLE",
+    "name_zh": "胡萝卜",
+    "description": "根茎类蔬菜，富含β-胡萝卜素。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2346404,
+    "category_code": "VEGETABLE",
+    "name_zh": "红薯",
+    "description": "块根类作物，富含β-胡萝卜素与膳食纤维。",
+    "state": "生，去皮"
+  },
+  {
+    "fdc_id": 2346401,
+    "category_code": "VEGETABLE",
+    "name_zh": "马铃薯",
+    "description": "常见主食型蔬菜，淀粉含量高。",
+    "state": "生，去皮"
+  },
+  {
+    "fdc_id": 2685573,
+    "category_code": "VEGETABLE",
+    "name_zh": "花椰菜",
+    "description": "十字花科蔬菜，维生素C含量较高。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 1999632,
+    "category_code": "VEGETABLE",
+    "name_zh": "菠菜",
+    "description": "叶菜类，富含叶酸、铁与维生素K。",
+    "state": "生，嫩叶"
+  },
+  {
+    "fdc_id": 2346405,
+    "category_code": "VEGETABLE",
+    "name_zh": "芹菜",
+    "description": "茎用蔬菜，水分与膳食纤维丰富。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2346406,
+    "category_code": "VEGETABLE",
+    "name_zh": "黄瓜",
+    "description": "瓜类蔬菜，含水量高、热量低。",
+    "state": "生，带皮"
+  },
+  {
+    "fdc_id": 2346407,
+    "category_code": "VEGETABLE",
+    "name_zh": "卷心菜",
+    "description": "结球甘蓝，富含维生素C。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2258588,
+    "category_code": "VEGETABLE",
+    "name_zh": "青椒",
+    "description": "未成熟甜椒，维生素C含量高。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2258590,
+    "category_code": "VEGETABLE",
+    "name_zh": "红椒",
+    "description": "成熟甜椒，富含维生素C与维生素A。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2346388,
+    "category_code": "VEGETABLE",
+    "name_zh": "生菜",
+    "description": "结球莴苣，口感清脆、水分高。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 323505,
+    "category_code": "VEGETABLE",
+    "name_zh": "羽衣甘蓝",
+    "description": "十字花科叶菜，富含维生素K与钙。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 321360,
+    "category_code": "VEGETABLE",
+    "name_zh": "圣女果",
+    "description": "小果型番茄，富含番茄红素与维生素C。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2685568,
+    "category_code": "VEGETABLE",
+    "name_zh": "西葫芦",
+    "description": "夏季瓜类，热量低。",
+    "state": "生，带皮"
+  },
+  {
+    "fdc_id": 2710826,
+    "category_code": "VEGETABLE",
+    "name_zh": "甜玉米",
+    "description": "甜玉米粒，含碳水化合物与膳食纤维。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 1750340,
+    "category_code": "FRUIT",
+    "name_zh": "苹果",
+    "description": "红富士苹果，带皮生食，富含膳食纤维。",
+    "state": "生，带皮"
+  },
+  {
+    "fdc_id": 1105314,
+    "category_code": "FRUIT",
+    "name_zh": "香蕉",
+    "description": "成熟香蕉，富含钾与碳水化合物。",
+    "state": "生，成熟"
+  },
+  {
+    "fdc_id": 746771,
+    "category_code": "FRUIT",
+    "name_zh": "橙子",
+    "description": "脐橙，富含维生素C。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2346409,
+    "category_code": "FRUIT",
+    "name_zh": "草莓",
+    "description": "浆果类，维生素C含量高。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2346411,
+    "category_code": "FRUIT",
+    "name_zh": "蓝莓",
+    "description": "浆果类，富含花青素。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2346412,
+    "category_code": "FRUIT",
+    "name_zh": "红葡萄",
+    "description": "无籽红葡萄，含糖以葡萄糖、果糖为主。",
+    "state": "生，无籽"
+  },
+  {
+    "fdc_id": 2710824,
+    "category_code": "FRUIT",
+    "name_zh": "牛油果",
+    "description": "富含单不饱和脂肪与膳食纤维。",
+    "state": "生，去皮"
+  },
+  {
+    "fdc_id": 2346398,
+    "category_code": "FRUIT",
+    "name_zh": "菠萝",
+    "description": "热带水果，含菠萝蛋白酶。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 746770,
+    "category_code": "FRUIT",
+    "name_zh": "哈密瓜",
+    "description": "甜瓜类，富含β-胡萝卜素。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2710832,
+    "category_code": "FRUIT",
+    "name_zh": "柑橘",
+    "description": "无籽柑橘，维生素C丰富。",
+    "state": "生，去皮"
+  },
+  {
+    "fdc_id": 2710833,
+    "category_code": "FRUIT",
+    "name_zh": "芒果",
+    "description": "热带水果，富含β-胡萝卜素。",
+    "state": "生，去皮"
+  },
+  {
+    "fdc_id": 746773,
+    "category_code": "FRUIT",
+    "name_zh": "梨",
+    "description": "巴梨，水分与膳食纤维丰富。",
+    "state": "生，带皮"
+  },
+  {
+    "fdc_id": 325430,
+    "category_code": "FRUIT",
+    "name_zh": "桃子",
+    "description": "黄桃，富含维生素C与钾。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2747675,
+    "category_code": "FRUIT",
+    "name_zh": "西瓜",
+    "description": "果肉部分，水分高，含番茄红素。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 323604,
+    "category_code": "EGG",
+    "name_zh": "鸡蛋",
+    "description": "全蛋液，巴氏杀菌冷冻品。",
+    "state": "生，全蛋"
+  },
+  {
+    "fdc_id": 747997,
+    "category_code": "EGG",
+    "name_zh": "蛋清",
+    "description": "蛋清，蛋白质含量高、几乎不含脂肪。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 748236,
+    "category_code": "EGG",
+    "name_zh": "蛋黄",
+    "description": "蛋黄，富含脂肪、胆固醇与多种维生素。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 329490,
+    "category_code": "EGG",
+    "name_zh": "全蛋粉",
+    "description": "喷雾干燥全蛋粉，便于储运。",
+    "state": "干"
+  },
+  {
+    "fdc_id": 746782,
+    "category_code": "DAIRY",
+    "name_zh": "牛奶",
+    "description": "全脂牛奶（3.25% 乳脂），强化维生素D。",
+    "state": "全脂"
+  },
+  {
+    "fdc_id": 746776,
+    "category_code": "DAIRY",
+    "name_zh": "脱脂牛奶",
+    "description": "脱脂牛奶，强化维生素A和维生素D。",
+    "state": "脱脂"
+  },
+  {
+    "fdc_id": 746772,
+    "category_code": "DAIRY",
+    "name_zh": "低脂牛奶",
+    "description": "低脂牛奶（1% 乳脂）。",
+    "state": "低脂"
+  },
+  {
+    "fdc_id": 328637,
+    "category_code": "DAIRY",
+    "name_zh": "切达奶酪",
+    "description": "切达奶酪，脂肪与钙含量高。",
+    "state": "熟成"
+  },
+  {
+    "fdc_id": 329370,
+    "category_code": "DAIRY",
+    "name_zh": "马苏里拉奶酪",
+    "description": "低水分部分脱脂马苏里拉奶酪。",
+    "state": ""
+  },
+  {
+    "fdc_id": 2259796,
+    "category_code": "DAIRY",
+    "name_zh": "菲达奶酪",
+    "description": "羊乳菲达奶酪，钠含量偏高。",
+    "state": "碎块"
+  },
+  {
+    "fdc_id": 2259793,
+    "category_code": "DAIRY",
+    "name_zh": "原味酸奶",
+    "description": "全脂原味酸奶。",
+    "state": ""
+  },
+  {
+    "fdc_id": 789828,
+    "category_code": "DAIRY",
+    "name_zh": "黄油",
+    "description": "无盐黄油，脂肪含量约80%。",
+    "state": "无盐"
+  },
+  {
+    "fdc_id": 2512380,
+    "category_code": "GRAIN",
+    "name_zh": "糙米",
+    "description": "糙米，保留麸皮与胚芽。",
+    "state": "生，未烹调"
+  },
+  {
+    "fdc_id": 2512381,
+    "category_code": "GRAIN",
+    "name_zh": "大米",
+    "description": "长粒白米。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2346396,
+    "category_code": "GRAIN",
+    "name_zh": "燕麦片",
+    "description": "传统压片燕麦（rolled oats）。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 789890,
+    "category_code": "GRAIN",
+    "name_zh": "中筋面粉",
+    "description": "强化漂白中筋面粉。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 790085,
+    "category_code": "GRAIN",
+    "name_zh": "全麦面粉",
+    "description": "全麦面粉，含麸皮与胚芽。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2512378,
+    "category_code": "GRAIN",
+    "name_zh": "荞麦",
+    "description": "荞麦全籽粒。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2512379,
+    "category_code": "GRAIN",
+    "name_zh": "小米",
+    "description": "小米全籽粒。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2710825,
+    "category_code": "GRAIN",
+    "name_zh": "黑米",
+    "description": "黑米，富含花青素。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2710819,
+    "category_code": "GRAIN",
+    "name_zh": "奇亚籽",
+    "description": "奇亚籽，富含α-亚麻酸与膳食纤维。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2710835,
+    "category_code": "GRAIN",
+    "name_zh": "玉米粉",
+    "description": "碱法处理玉米粉（masa harina）。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2512372,
+    "category_code": "GRAIN",
+    "name_zh": "藜麦粉",
+    "description": "藜麦粉。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2710838,
+    "category_code": "GRAIN",
+    "name_zh": "红米",
+    "description": "红米，保留部分麸皮。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 321358,
+    "category_code": "LEGUME",
+    "name_zh": "鹰嘴豆泥",
+    "description": "商业鹰嘴豆泥。",
+    "state": "即食"
+  },
+  {
+    "fdc_id": 2262072,
+    "category_code": "LEGUME",
+    "name_zh": "花生酱",
+    "description": "顺滑花生酱。",
+    "state": "加工"
+  },
+  {
+    "fdc_id": 1999630,
+    "category_code": "LEGUME",
+    "name_zh": "无糖豆奶",
+    "description": "无糖原味豆奶（常温装）。",
+    "state": "即饮"
+  },
+  {
+    "fdc_id": 2644282,
+    "category_code": "LEGUME",
+    "name_zh": "鹰嘴豆",
+    "description": "干鹰嘴豆。",
+    "state": "干"
+  },
+  {
+    "fdc_id": 2644283,
+    "category_code": "LEGUME",
+    "name_zh": "小扁豆",
+    "description": "干小扁豆。",
+    "state": "干"
+  },
+  {
+    "fdc_id": 2644284,
+    "category_code": "LEGUME",
+    "name_zh": "黑眼豆",
+    "description": "干黑眼豆。",
+    "state": "干"
+  },
+  {
+    "fdc_id": 2644292,
+    "category_code": "LEGUME",
+    "name_zh": "斑豆",
+    "description": "罐头斑豆（沥干冲洗）。",
+    "state": "罐头"
+  },
+  {
+    "fdc_id": 2644285,
+    "category_code": "LEGUME",
+    "name_zh": "黑豆",
+    "description": "罐头黑豆（沥干冲洗）。",
+    "state": "罐头"
+  },
+  {
+    "fdc_id": 2644289,
+    "category_code": "LEGUME",
+    "name_zh": "红腰豆",
+    "description": "罐头深红芸豆（红腰豆）。",
+    "state": "罐头"
+  },
+  {
+    "fdc_id": 2515376,
+    "category_code": "LEGUME",
+    "name_zh": "花生",
+    "description": "生花生仁。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2346393,
+    "category_code": "NUT_SEED",
+    "name_zh": "杏仁",
+    "description": "生扁桃仁（巴旦木）。",
+    "state": "生，未烘焙"
+  },
+  {
+    "fdc_id": 2346394,
+    "category_code": "NUT_SEED",
+    "name_zh": "核桃",
+    "description": "生核桃仁。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2515374,
+    "category_code": "NUT_SEED",
+    "name_zh": "腰果",
+    "description": "生腰果。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2515379,
+    "category_code": "NUT_SEED",
+    "name_zh": "开心果",
+    "description": "生开心果仁。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2515375,
+    "category_code": "NUT_SEED",
+    "name_zh": "榛子",
+    "description": "生榛子仁。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2346395,
+    "category_code": "NUT_SEED",
+    "name_zh": "碧根果",
+    "description": "生碧根果（长山核桃）。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2515380,
+    "category_code": "NUT_SEED",
+    "name_zh": "南瓜籽",
+    "description": "生南瓜籽仁。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2515381,
+    "category_code": "NUT_SEED",
+    "name_zh": "葵花籽",
+    "description": "生葵花籽仁。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2684440,
+    "category_code": "FISH",
+    "name_zh": "三文鱼",
+    "description": "野生红鲑（sockeye 三文鱼）。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 334194,
+    "category_code": "FISH",
+    "name_zh": "金枪鱼罐头",
+    "description": "水浸金枪鱼罐头（沥干）。",
+    "state": "罐头"
+  },
+  {
+    "fdc_id": 2684444,
+    "category_code": "FISH",
+    "name_zh": "鳕鱼",
+    "description": "野生大西洋鳕鱼。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2684442,
+    "category_code": "FISH",
+    "name_zh": "罗非鱼",
+    "description": "养殖罗非鱼。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2684445,
+    "category_code": "FISH",
+    "name_zh": "鲶鱼",
+    "description": "养殖鲶鱼。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2684443,
+    "category_code": "FISH",
+    "name_zh": "虾",
+    "description": "养殖虾（甲壳类）。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2747667,
+    "category_code": "FISH",
+    "name_zh": "扇贝",
+    "description": "野生冷冻海扇贝。",
+    "state": "冷冻"
+  },
+  {
+    "fdc_id": 2747671,
+    "category_code": "FISH",
+    "name_zh": "鱿鱼",
+    "description": "冷冻鱿鱼筒。",
+    "state": "冷冻"
+  },
+  {
+    "fdc_id": 2514743,
+    "category_code": "MEAT",
+    "name_zh": "牛肉末",
+    "description": "90% 瘦牛肉糜。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2646172,
+    "category_code": "MEAT",
+    "name_zh": "牛肋眼肉",
+    "description": "choice 级肋眼牛排。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2646174,
+    "category_code": "MEAT",
+    "name_zh": "牛肩肉",
+    "description": "牛肩胛烤肉。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2727573,
+    "category_code": "MEAT",
+    "name_zh": "牛里脊",
+    "description": "牛里脊（菲力）排。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2727574,
+    "category_code": "MEAT",
+    "name_zh": "牛西冷",
+    "description": "牛上后腰脊（西冷）排。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2646168,
+    "category_code": "MEAT",
+    "name_zh": "猪里脊",
+    "description": "去骨猪里脊。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2514745,
+    "category_code": "MEAT",
+    "name_zh": "猪肉末",
+    "description": "猪肉糜。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2727575,
+    "category_code": "MEAT",
+    "name_zh": "猪排",
+    "description": "中切猪排。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 749420,
+    "category_code": "MEAT",
+    "name_zh": "培根",
+    "description": "熟培根。",
+    "state": "熟"
+  },
+  {
+    "fdc_id": 746952,
+    "category_code": "MEAT",
+    "name_zh": "火腿",
+    "description": "切片火腿。",
+    "state": "熟"
+  },
+  {
+    "fdc_id": 2646170,
+    "category_code": "POULTRY",
+    "name_zh": "鸡胸肉",
+    "description": "去皮去骨鸡胸肉。",
+    "state": "生，去皮"
+  },
+  {
+    "fdc_id": 2646171,
+    "category_code": "POULTRY",
+    "name_zh": "鸡腿肉",
+    "description": "去皮去骨鸡腿肉。",
+    "state": "生，去皮"
+  },
+  {
+    "fdc_id": 2727566,
+    "category_code": "POULTRY",
+    "name_zh": "鸡腿",
+    "description": "带皮鸡小腿。",
+    "state": "生，带皮"
+  },
+  {
+    "fdc_id": 2727568,
+    "category_code": "POULTRY",
+    "name_zh": "鸡翅",
+    "description": "带皮鸡翅。",
+    "state": "生，带皮"
+  },
+  {
+    "fdc_id": 2514746,
+    "category_code": "POULTRY",
+    "name_zh": "鸡肉末",
+    "description": "鸡肉糜。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 2514747,
+    "category_code": "POULTRY",
+    "name_zh": "火鸡肉末",
+    "description": "93% 瘦火鸡肉糜。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 331960,
+    "category_code": "POULTRY",
+    "name_zh": "熟鸡胸肉",
+    "description": "炖/焖熟的鸡胸肉。",
+    "state": "熟"
+  },
+  {
+    "fdc_id": 331897,
+    "category_code": "POULTRY",
+    "name_zh": "熟鸡腿肉",
+    "description": "炖/焖熟的鸡小腿（去皮）。",
+    "state": "熟"
+  },
+  {
+    "fdc_id": 748608,
+    "category_code": "OIL_FAT",
+    "name_zh": "橄榄油",
+    "description": "特级初榨橄榄油。",
+    "state": ""
+  },
+  {
+    "fdc_id": 330458,
+    "category_code": "OIL_FAT",
+    "name_zh": "椰子油",
+    "description": "椰子油。",
+    "state": ""
+  },
+  {
+    "fdc_id": 1750348,
+    "category_code": "OIL_FAT",
+    "name_zh": "花生油",
+    "description": "花生油。",
+    "state": ""
+  },
+  {
+    "fdc_id": 748278,
+    "category_code": "OIL_FAT",
+    "name_zh": "菜籽油",
+    "description": "芥花籽油（低芥酸菜籽油）。",
+    "state": ""
+  },
+  {
+    "fdc_id": 746775,
+    "category_code": "SPICE_HERB",
+    "name_zh": "加碘食盐",
+    "description": "加碘食用盐。",
+    "state": ""
+  },
+  {
+    "fdc_id": 326698,
+    "category_code": "SPICE_HERB",
+    "name_zh": "黄芥末酱",
+    "description": "黄色芥末调味酱。",
+    "state": "调味"
+  },
+  {
+    "fdc_id": 1104647,
+    "category_code": "SPICE_HERB",
+    "name_zh": "大蒜",
+    "description": "生大蒜。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 790646,
+    "category_code": "SPICE_HERB",
+    "name_zh": "洋葱",
+    "description": "黄洋葱。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 1999631,
+    "category_code": "BEVERAGE",
+    "name_zh": "杏仁奶",
+    "description": "无糖原味杏仁奶（常温装）。",
+    "state": "即饮"
+  },
+  {
+    "fdc_id": 2257046,
+    "category_code": "BEVERAGE",
+    "name_zh": "燕麦奶",
+    "description": "无糖原味燕麦奶（冷藏）。",
+    "state": "即饮"
+  },
+  {
+    "fdc_id": 2003591,
+    "category_code": "BEVERAGE",
+    "name_zh": "橙汁",
+    "description": "浓缩还原橙汁（冷藏）。",
+    "state": "即饮"
+  },
+  {
+    "fdc_id": 2003590,
+    "category_code": "BEVERAGE",
+    "name_zh": "苹果汁",
+    "description": "浓缩还原苹果汁，添加维生素C。",
+    "state": "即饮"
+  },
+  {
+    "fdc_id": 332282,
+    "category_code": "SOUP_SAUCE",
+    "name_zh": "意大利面酱",
+    "description": "意面用番茄酱汁。",
+    "state": "即食"
+  },
+  {
+    "fdc_id": 746777,
+    "category_code": "SOUP_SAUCE",
+    "name_zh": "莎莎酱",
+    "description": "墨西哥莎莎酱。",
+    "state": "即食"
+  },
+  {
+    "fdc_id": 333008,
+    "category_code": "BAKED_SWEET",
+    "name_zh": "燕麦葡萄干曲奇",
+    "description": "软式燕麦葡萄干曲奇。",
+    "state": "烘焙"
+  },
+  {
+    "fdc_id": 746784,
+    "category_code": "BAKED_SWEET",
+    "name_zh": "白砂糖",
+    "description": "精制白砂糖。",
+    "state": ""
+  },
+  {
+    "fdc_id": 1104913,
+    "category_code": "BAKED_SWEET",
+    "name_zh": "低筋面粉",
+    "description": "低筋面粉，适合烘焙糕点。",
+    "state": "生"
+  },
+  {
+    "fdc_id": 1104867,
+    "category_code": "BAKED_SWEET",
+    "name_zh": "糯米粉",
+    "description": "糯米粉。",
+    "state": "生"
+  }
+]

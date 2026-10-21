@@ -32,4 +32,6 @@ Thumbs.db
 # ---- Env ----
 .env
 .env.*
+# 模板文件要入库：它只含变量名与空值，是配置说明的一部分
+!.env.example
 *.local

@@ -1,0 +1,10 @@
+food_id,image_url,source_name,source_url,photographer,license,attribution
+# 这是「无 API Key 时手工导入图片 URL」的清单格式示例，请勿直接使用：下面没有真实 URL。
+# 用法：删除 '#' 开头的注释行后，按 food_id 逐行填写。各列含义：
+#   food_id      food 表主键（整数），指向要补哪一行
+#   image_url    可直接下载的图片二进制地址（http/https 结尾是图片本体，不是网页）
+#   source_name  来源名，如 wikimedia-commons / 自摄 / 某图库名
+#   source_url   来源落地页，便于人工核对
+#   photographer 作者
+#   license      许可，如 CC0 / CC BY-SA 4.0 / Public domain
+#   attribution  署名文案（留空则用 source_name + photographer 拼）

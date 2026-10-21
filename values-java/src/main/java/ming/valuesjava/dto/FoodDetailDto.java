@@ -4,6 +4,7 @@ import java.util.List;
 
 /**
  * 食物详情。
+ * imageUrl、description、state 均可为 null：新库中多数食物没有配图，state 也有缺行，前端需容忍缺省。
  * nutrientTiles 为全部营养素（按 sort_order），highlights 只保留达到「富含」条件且有科普说明的项。
  */
 public record FoodDetailDto(

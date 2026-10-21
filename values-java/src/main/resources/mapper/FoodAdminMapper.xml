@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    管理端食物列表/详情/更新。
+
+    关键词过滤保持在 Java 侧完成转义（% 与 _ 按字面量匹配），XML 只负责绑定参数：
+    MyBatis 的 LIKE 不会自动转义，把用户输入直接拼进 pattern 会让 % 把整表捞出来。
+    转义符固定为 '!'，并由 ESCAPE '!' 显式声明，避免不同 sql_mode 下的歧义。
+-->
+<mapper namespace="ming.valuesjava.mapper.FoodAdminMapper">
+
+    <resultMap id="FoodSummaryRowMap" type="ming.valuesjava.repository.FoodAdminRepository$FoodSummaryRow">
+        <constructor>
+            <arg column="id" javaType="_long"/>
+            <arg column="name" javaType="java.lang.String"/>
+            <arg column="name_en" javaType="java.lang.String"/>
+            <arg column="category_code" javaType="java.lang.String"/>
+            <arg column="category_name" javaType="java.lang.String"/>
+            <arg column="image_url" javaType="java.lang.String"/>
+            <arg column="description" javaType="java.lang.String"/>
+            <arg column="state" javaType="java.lang.String"/>
+            <arg column="fdc_id" javaType="java.lang.Long"/>
+            <arg column="verified" javaType="_boolean"/>
+            <arg column="updated_at" javaType="java.time.LocalDateTime"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="FoodDetailRowMap" type="ming.valuesjava.repository.FoodAdminRepository$FoodDetailRow">
+        <constructor>
+            <arg column="id" javaType="_long"/>
+            <arg column="name" javaType="java.lang.String"/>
+            <arg column="name_en" javaType="java.lang.String"/>
+            <arg column="category_id" javaType="_long"/>
+            <arg column="category_code" javaType="java.lang.String"/>
+            <arg column="category_name" javaType="java.lang.String"/>
+            <arg column="image_url" javaType="java.lang.String"/>
+            <arg column="description" javaType="java.lang.String"/>
+            <arg column="state" javaType="java.lang.String"/>
+            <arg column="fdc_id" javaType="java.lang.Long"/>
+            <arg column="ndb_number" javaType="java.lang.String"/>
+            <arg column="data_type" javaType="java.lang.String"/>
+            <arg column="publication_date" javaType="java.time.LocalDate"/>
+            <arg column="source_id" javaType="_int"/>
+            <arg column="source_name" javaType="java.lang.String"/>
+            <arg column="source_record_id" javaType="java.lang.String"/>
+            <arg column="verified" javaType="_boolean"/>
+            <arg column="source_note" javaType="java.lang.String"/>
+            <arg column="claim_note" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+
+    <sql id="summaryFrom">
+        SELECT f.id, f.name, f.name_en, c.code AS category_code, c.name AS category_name,
+               f.image_url, f.description, f.state, f.fdc_id, f.verified, f.updated_at
+        FROM food f
+        JOIN food_category c ON c.id = f.category_id
+    </sql>
+
+    <!-- count 与 findPage 共用同一段过滤条件，保证总数与列表条目的口径一致 -->
+    <sql id="filterWhere">
+        <where>
+            <if test="keywordPattern != null">
+                (LOWER(f.name) LIKE #{keywordPattern} ESCAPE '!'
+                 OR LOWER(f.name_en) LIKE #{keywordPattern} ESCAPE '!')
+            </if>
+            <if test="categoryCode != null">
+                AND c.code = #{categoryCode}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findPage" resultMap="FoodSummaryRowMap">
+        <include refid="summaryFrom"/>
+        <include refid="filterWhere"/>
+        ORDER BY f.id
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*)
+        FROM food f
+        JOIN food_category c ON c.id = f.category_id
+        <include refid="filterWhere"/>
+    </select>
+
+    <select id="findDetail" resultMap="FoodDetailRowMap">
+        SELECT f.id, f.name, f.name_en, f.category_id, c.code AS category_code, c.name AS category_name,
+               f.image_url, f.description, f.state, f.fdc_id, f.ndb_number, f.data_type,
+               f.publication_date, f.source_id, ds.name AS source_name, f.source_record_id,
+               f.verified, f.source_note, f.claim_note
+        FROM food f
+        JOIN food_category c ON c.id = f.category_id
+        JOIN data_source ds ON ds.id = f.source_id
+        WHERE f.id = #{id}
+    </select>
+
+    <!-- source_record_id 与 data_type 由导入流程维护，管理端全量编辑不覆盖，避免误清来源追溯信息 -->
+    <update id="updateFood">
+        UPDATE food
+        SET name = #{name},
+            name_en = #{nameEn},
+            category_id = #{categoryId},
+            image_url = #{imageUrl},
+            description = #{description},
+            state = #{state},
+            fdc_id = #{fdcId},
+            source_id = #{sourceId},
+            verified = #{verified},
+            source_note = #{sourceNote},
+            claim_note = #{claimNote}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

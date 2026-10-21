@@ -1,0 +1,11 @@
+# AI 扩展依赖（LangChain / LangGraph）——当前尚未安装，按需再装：
+#   pip install -r requirements-ai.txt
+#
+# 为什么与 requirements.txt 分开：
+# 数据导入与图片补全只依赖 pymysql/requests/Pillow，体积小、启动快；
+# AI 依赖体积大且迭代快，混在一起会让只想跑数据脚本的人也被迫安装一堆包。
+langchain>=0.3.0
+langchain-core>=0.3.0
+langgraph>=0.2.0
+# 具体模型供应商按需二选一或都装
+langchain-openai>=0.2.0
