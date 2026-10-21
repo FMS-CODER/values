@@ -15,4 +15,11 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  // 开发与预览都通过代理把 /api 转发到后端，前端只依赖同源 /api，无需处理跨域
+  server: {
+    proxy: { '/api': { target: 'http://localhost:8080', changeOrigin: true } },
+  },
+  preview: {
+    proxy: { '/api': { target: 'http://localhost:8080', changeOrigin: true } },
+  },
 })

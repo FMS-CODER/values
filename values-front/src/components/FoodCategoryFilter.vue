@@ -1,24 +1,23 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { CATEGORIES } from '@/data/foods'
 import { useFoodStore } from '@/stores/food'
 
 const store = useFoodStore()
-const { selectedCategory } = storeToRefs(store)
+const { selectedCategory, categoryOptions } = storeToRefs(store)
 </script>
 
 <template>
   <div class="category-filter" role="group" aria-label="食物分类筛选">
     <button
-      v-for="category in CATEGORIES"
-      :key="category"
+      v-for="category in categoryOptions"
+      :key="category.code"
       type="button"
       class="category-chip"
-      :class="{ 'is-active': selectedCategory === category }"
-      :aria-pressed="selectedCategory === category"
-      @click="store.setCategory(category)"
+      :class="{ 'is-active': selectedCategory === category.code }"
+      :aria-pressed="selectedCategory === category.code"
+      @click="store.setCategory(category.code)"
     >
-      {{ category }}
+      {{ category.name }}
     </button>
   </div>
 </template>
