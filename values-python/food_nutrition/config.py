@@ -21,10 +21,20 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+try:
+    from dotenv import load_dotenv
+except ImportError:  # 精简环境未安装 python-dotenv 时仍可运行，只是不读 .env
+    load_dotenv = None
+
 # config.py 位于 values-python/food_nutrition/，据此推导上两级
 PACKAGE_ROOT = Path(__file__).resolve().parent
 PYTHON_ROOT = PACKAGE_ROOT.parent
 REPO_ROOT = PYTHON_ROOT.parent
+
+# 可选读取 values-python/.env，必须放在所有 os.getenv 之前；
+# 进程环境变量优先级高于 .env，方便临时覆盖
+if load_dotenv is not None:
+    load_dotenv(PYTHON_ROOT / ".env")
 
 # 前端静态资源目录：数据库里的 image_url(/foods/x.jpg) 去掉前导斜杠后拼到这里
 PUBLIC_DIR = REPO_ROOT / "values-front" / "public"

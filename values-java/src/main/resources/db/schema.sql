@@ -192,3 +192,32 @@ WHERE fn.basis_type = '100G'
      OR (ni.rich_rule_type = 'ABSOLUTE'
          AND ni.rich_threshold_per_100g IS NOT NULL
          AND fn.amount >= ni.rich_threshold_per_100g) );
+
+-- ---------------------------------------------------------------- AI 会话与消息
+
+-- 会话归属依靠客户端匿名标识（X-User-Id），当前没有登录体系；
+-- 正式接入登录后，应把 user_id 换成账号 ID 并在服务端从登录态读取。
+CREATE TABLE IF NOT EXISTS ai_conversation (
+  id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '会话主键',
+  user_id    VARCHAR(64)     NOT NULL COMMENT '客户端匿名用户标识',
+  title      VARCHAR(120)    NOT NULL COMMENT '会话标题，取首条问题摘要',
+  created_at DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+  PRIMARY KEY (id),
+  KEY idx_ai_conversation_user_updated (user_id, updated_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='AI 助手会话';
+
+CREATE TABLE IF NOT EXISTS ai_message (
+  id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '消息主键',
+  conversation_id BIGINT UNSIGNED NOT NULL COMMENT '所属会话',
+  role            VARCHAR(16)     NOT NULL COMMENT 'user / assistant',
+  content         MEDIUMTEXT      NOT NULL COMMENT '消息内容',
+  citations_json  JSON            NULL COMMENT '引用数组',
+  mode            VARCHAR(24)     NULL COMMENT 'llm / database / rag / placeholder',
+  status          VARCHAR(16)     NOT NULL DEFAULT 'done' COMMENT 'done / failed',
+  created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (id),
+  KEY idx_ai_message_conversation_created (conversation_id, created_at),
+  CONSTRAINT fk_ai_message_conversation
+    FOREIGN KEY (conversation_id) REFERENCES ai_conversation (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='AI 助手消息';

@@ -19,6 +19,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedOrigins("http://localhost:5173", "http://127.0.0.1:5173")
-                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE");
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+                // 前端用 X-User-Id 传匿名会话归属；预检必须放行这个自定义头
+                .allowedHeaders("*");
     }
 }

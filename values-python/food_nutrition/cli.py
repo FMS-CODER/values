@@ -21,6 +21,8 @@ COMMANDS: dict[str, tuple[str, str]] = {
     "images-check": ("food_nutrition.images.check", "食物图片体检（只读，不写库不下载）"),
     "images-fetch": ("food_nutrition.images.fetch", "食物图片批量补全（搜索/下载/转码/写库）"),
     "ai-serve": ("food_nutrition.ai.server", "启动 AI 营养问答服务（默认 127.0.0.1:8000）"),
+    "rag-index": ("food_nutrition.ai.rag.ingestion", "重建营养知识向量索引"),
+    "rag-search": ("food_nutrition.ai.rag.retriever", "检索营养知识库并打印引用"),
 }
 
 
@@ -34,6 +36,8 @@ def _print_help() -> None:
     print("  python -m food_nutrition images-fetch --scan")
     print("  python -m food_nutrition ingest --check")
     print("  python -m food_nutrition ai-serve")
+    print("  python -m food_nutrition rag-index")
+    print("  python -m food_nutrition rag-search \"蛋白质有什么作用\"")
     print("\n每个命令的完整参数用：python -m food_nutrition <命令> --help")
 
 

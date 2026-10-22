@@ -86,10 +86,14 @@ def list_foods() -> list[dict[str, Any]]:
                f.name,
                f.name_en,
                f.description,
+               f.source_note,
+               f.verified,
                fc.code AS category_code,
-               fc.name AS category_name
+               fc.name AS category_name,
+               ds.name AS source_name
         FROM food f
         JOIN food_category fc ON fc.id = f.category_id
+        LEFT JOIN data_source ds ON ds.id = f.source_id
         ORDER BY f.id
         """
     )

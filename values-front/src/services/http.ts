@@ -43,13 +43,39 @@ async function readErrorMessage(response: Response): Promise<string> {
  * 避免把浏览器的 "Failed to fetch" 原样展示给用户。
  * 失败处留一条前端日志，只记录路径与状态码，不带业务数据。
  */
+const USER_ID_KEY = 'values:client-user-id'
+
+/**
+ * 当前没有登录体系，用一个浏览器持久化的匿名 ID 表示会话归属。
+ * 后端只拿它校验「这个会话是不是当前浏览器创建的」，不是安全身份。
+ */
+function getClientUserId(): string {
+  try {
+    const existing = localStorage.getItem(USER_ID_KEY)
+    if (existing) return existing
+
+    const generated =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `local-${Date.now()}-${Math.random().toString(16).slice(2)}`
+    localStorage.setItem(USER_ID_KEY, generated)
+    return generated
+  } catch {
+    return 'local-user'
+  }
+}
+
 async function send<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response
 
+  const headers = new Headers(init?.headers)
+  if (!headers.has('Accept')) headers.set('Accept', 'application/json')
+  headers.set('X-User-Id', getClientUserId())
+
   try {
     response = await fetch(path, {
-      headers: { Accept: 'application/json' },
       ...init,
+      headers,
     })
   } catch (err) {
     // 原始错误打到控制台保留诊断信息，抛给调用方的是可直接展示的文案

@@ -9,6 +9,9 @@
 fastapi>=0.115.0
 uvicorn>=0.30.0
 
+# RAG 向量库（未启动 Qdrant 时会自动降级为进程内索引）
+qdrant-client>=1.9.0
+
 # 以下为可选：只有改用 LangChain / LangGraph 编排时才需要
 langchain>=0.3.0
 langchain-core>=0.3.0

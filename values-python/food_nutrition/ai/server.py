@@ -3,7 +3,6 @@
 """AI 营养问答 HTTP 服务。
 
 接口与 Java 侧的 /api/assistant/chat 保持完全一致的请求/响应结构，
-Java 只做参数校验与转发，因此前端不需要知道 Python 服务的存在。
 
 启动：
     python -m food_nutrition ai-serve
@@ -22,7 +21,7 @@ import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from .chat import answer
+from .chat import get_chat_service
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +39,24 @@ class ChatRequest(BaseModel):
     history: list[ChatMessage] | None = None
 
 
+class CitationModel(BaseModel):
+    documentId: str
+    title: str
+    source: str
+    url: str = ""
+    snippet: str
+    score: float
+    kind: str = "knowledge"
+    reviewStatus: str = "approved"
+    version: str = "1"
+
+
 class ChatResponse(BaseModel):
     reply: str
     mode: str
     suggestions: list[str]
+    citations: list[CitationModel] = []
+    intent: str = "general"
 
 
 app = FastAPI(title="食物营养百科 AI 服务", version="0.1.0")
@@ -74,7 +87,7 @@ def chat(payload: ChatRequest) -> ChatResponse:
             raise HTTPException(status_code=400, detail="history.role 只能是 user 或 assistant")
 
     try:
-        reply, mode, suggestions = answer(
+        result = get_chat_service().answer(
             message,
             [{"role": item.role, "content": item.content} for item in history],
         )
@@ -83,7 +96,13 @@ def chat(payload: ChatRequest) -> ChatResponse:
         logger.exception("生成回答失败：%s", exc)
         raise HTTPException(status_code=503, detail="AI 服务暂时不可用") from exc
 
-    return ChatResponse(reply=reply, mode=mode, suggestions=suggestions)
+    return ChatResponse(
+        reply=result.reply,
+        mode=result.mode,
+        suggestions=result.suggestions,
+        citations=[CitationModel(**citation.to_dict()) for citation in result.citations],
+        intent=result.intent,
+    )
 
 
 def main(argv: list[str] | None = None) -> None:

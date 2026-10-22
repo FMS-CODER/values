@@ -6,10 +6,11 @@
 
 - 首页浏览食物，支持分类筛选与关键词搜索
 - 食物详情：每 100g 营养成分、NRV%、营养亮点、数据来源与判定标准
-- AI 营养助手：食物营养解释、营养素排名、两种食物对比
+- AI 营养助手：多轮会话、历史记录、营养数据查询、知识检索与答案引用
+- AI 回答带真实来源：营养库数值引用食物条数，知识回答引用知识文档标题与来源
 - 管理端：食物管理、分类管理、图片审核
-- 数据工具：USDA Foundation Foods 导入、食物图片补全与审核清单
-- AI 服务可选接入大模型；未配置 API Key 时直接基于营养库数据回答
+- 数据工具：USDA Foundation Foods 导入、食物图片补全与审核清单、营养知识索引
+- AI 服务可选接入大模型；未配置 API Key 时直接基于营养库与知识库回答
 
 ## 技术栈
 
@@ -18,6 +19,7 @@
 | 前端 | Vue 3、Vite 8、TypeScript、Pinia、Vue Router |
 | 后端 | Java 17、Spring Boot 3.3、MyBatis-Plus、MySQL |
 | AI 服务 | Python 3.12、FastAPI、Uvicorn、PyMySQL |
+| 向量检索 | Qdrant（未启动时降级为进程内索引） |
 | 数据来源 | USDA FoodData Central（Foundation Foods） |
 | 营养判定 | GB 28050-2025（参考其营养声称判定口径） |
 
@@ -30,13 +32,15 @@ flowchart LR
     Java --> MySQL[(MySQL 8 / values)]
     Java -->|POST /api/assistant/chat| Python[FastAPI :8000]
     Python --> MySQL
+    Python --> Qdrant[(Qdrant :6333)]
     Python -.可选.-> LLM[OpenAI 兼容模型]
 ```
 
 - 前端只访问同源 `/api`，由 Vite 代理到 `http://localhost:8080`。
-- Java 负责输入校验、CORS 与接口聚合，再把 AI 请求转发给 Python。
-- Python AI 服务直接查询营养库；配置模型 Key 后，把检索结果作为上下文交给模型。
-- Python 服务不可用时，Java 自动回退为 `mode=placeholder` 的占位回复。
+- Java 负责输入校验、会话归属校验、消息持久化，再把 AI 请求转发给 Python。
+- Python 侧由 Agent 调度器决定走 SQL 营养查询、RAG 知识检索，或两者合并。
+- 结构化营养数据始终走 SQL；向量库只保存知识文档切块，不复制营养数值。
+- 未配置模型 Key 时，回答由代码基于数据库与检索结果确定性生成；配置 Key 后仍由答案审核器校验数值与引用。
 
 ## 目录结构
 
@@ -53,13 +57,17 @@ values/
 │   └── src/main/
 │       ├── java/           controller / service / repository / mapper
 │       └── resources/
-│           ├── db/         schema.sql、data.sql
+│           ├── db/         schema.sql、data.sql、migration/
 │           └── mapper/     MyBatis XML
 ├── values-python/         Python 数据工具与 AI 服务
 │   ├── food_nutrition/
 │   │   ├── ingestion/     USDA 数据导入
 │   │   ├── images/        图片补全与审核清单
-│   │   └── ai/            FastAPI 服务、营养库检索、回答生成
+│   │   └── ai/            FastAPI 服务
+│   │       ├── rag/       切块、向量化、Qdrant 封装、检索、索引导入
+│   │       ├── agents/    调度器、营养数据、知识、分析与答案审核
+│   │       └── services/  统一问答与知识检索服务
+│   ├── tests/             RAG、调度与审核的单元测试
 │   └── data/images/       图片清单与审核产物
 └── README.md
 ```
@@ -81,13 +89,15 @@ values/
 ```sql
 SOURCE c:/path/to/values-java/src/main/resources/db/schema.sql;
 SOURCE c:/path/to/values-java/src/main/resources/db/data.sql;
+SOURCE c:/path/to/values-java/src/main/resources/db/migration/V2__ai_conversation.sql;
 ```
 
 说明：
 
-- `schema.sql` 会自动创建 `values` 库（`utf8mb4`）。
+- `schema.sql` 会自动创建 `values` 库（`utf8mb4`），并已包含 `ai_conversation`、`ai_message`。
 - `data.sql` 只包含分类字典、来源字典和少量人工整理食物。
 - 完整的 116 条食物与 1,647 条营养数据由 Python 导入脚本写入。
+- 已有数据库只需执行一次 `V2__ai_conversation.sql`；该脚本只新增 AI 会话与消息表，不改动既有业务表。
 
 导入 USDA 全量数据（可选，需要本机 USDA JSON 文件）：
 
@@ -134,7 +144,21 @@ python -m food_nutrition ai-serve
 Invoke-RestMethod http://127.0.0.1:8000/health
 ```
 
-不配置模型 Key 时，服务仍可启动，回答直接来自营养库（`mode=database`）。
+不配置模型 Key 时，服务仍可启动，回答由代码基于营养库与知识库生成（`mode=database` / `mode=rag`）。
+
+知识索引：
+
+- 知识来源为 `nutrient_knowledge` 与 `values-python/data/knowledge/*.md`，结构化营养数值仍只走 SQL。
+- 默认 embedding 为本地哈希向量，不依赖外部服务；也可配置 OpenAI 兼容的 `/embeddings` 接口。
+- 推荐启动 Qdrant 后重建索引；Qdrant 或客户端不可用时自动降级为进程内索引，重启后需重新建索引。
+
+```powershell
+docker run -d -p 6333:6333 qdrant/qdrant
+python -m food_nutrition rag-index --rebuild
+python -m food_nutrition rag-search "蛋白质有什么作用？"
+```
+
+首次检索会自动建索引（`RAG_AUTO_INDEX=true`）。切换 embedding 模型或维度后必须执行 `--rebuild`，否则集合维度与查询向量不一致。
 
 ### 4. 启动前端
 
@@ -155,21 +179,28 @@ npm run dev
 
 ## AI 模型配置
 
-Python 服务只读取**进程环境变量**，不会自动加载 `.env` 文件。`values-python/.env.example` 列出了全部变量名，可按需参考。
+复制 `values-python/.env.example` 为 `values-python/.env` 后填写即可，服务启动时会自动加载（`python-dotenv`）。进程环境变量优先级高于 `.env`，适合临时覆盖。
+
+```ini
+# 阿里云百炼（OpenAI 兼容模式）
+AI_PROVIDER=dashscope
+AI_MODEL=deepseek-v4.1-flash
+AI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+AI_API_KEY_ENV=DASHSCOPE_API_KEY
+DASHSCOPE_API_KEY=sk-...
+```
+
+其他供应商：
 
 ```powershell
 # OpenAI
-$env:AI_PROVIDER="openai"
-$env:OPENAI_API_KEY="sk-..."
+$env:AI_PROVIDER="openai"; $env:OPENAI_API_KEY="sk-..."
 
-# DeepSeek
-$env:AI_PROVIDER="deepseek"
-$env:DEEPSEEK_API_KEY="sk-..."
-
-# 阿里云百炼
-$env:AI_PROVIDER="dashscope"
-$env:DASHSCOPE_API_KEY="sk-..."
+# DeepSeek 官方
+$env:AI_PROVIDER="deepseek"; $env:DEEPSEEK_API_KEY="sk-..."
 ```
+
+未配置 Key 时服务照常启动，回答自动降级为基于营养库与知识库的确定性回复。
 
 常用可选变量：
 
@@ -181,13 +212,30 @@ $env:DASHSCOPE_API_KEY="sk-..."
 | `AI_SERVICE_HOST` | FastAPI 监听地址 | `127.0.0.1` |
 | `AI_SERVICE_PORT` | FastAPI 监听端口 | `8000` |
 
+RAG 与向量检索变量：
+
+| 变量 | 说明 | 默认值 |
+|---|---|---|
+| `QDRANT_ENABLED` | 是否尝试连接 Qdrant | `true` |
+| `QDRANT_URL` | Qdrant 地址 | `http://127.0.0.1:6333` |
+| `QDRANT_COLLECTION` | 集合名称 | `nutrition_knowledge` |
+| `EMBEDDING_PROVIDER` | `hash`（离线）或 `openai` | `hash` |
+| `EMBEDDING_MODEL` | 嵌入模型 | `hash-ngram-v1` |
+| `EMBEDDING_DIM` | 向量维度，必须与集合一致 | `384`（openai 默认 `1536`） |
+| `RAG_TOP_K` | 召回条数 | `4` |
+| `RAG_MIN_SCORE` | 最低相似度 | `0.2` |
+| `RAG_AUTO_INDEX` | 首次检索自动建索引 | `true` |
+| `KNOWLEDGE_DIR` | 额外 Markdown 知识目录 | `values-python/data/knowledge` |
+| `RAG_INCLUDE_PENDING` | 是否召回未审核知识 | `false` |
+
 回答模式：
 
 | mode | 含义 |
 |---|---|
-| `llm` | 使用大模型生成 |
+| `llm` | 使用大模型生成，回答需通过答案审核 |
 | `database` | 直接基于营养库数据生成 |
-| `placeholder` | Python 服务不可用时的降级回复 |
+| `rag` | 基于知识库检索结果生成 |
+| `placeholder` | AI 服务不可用时的降级回复 |
 
 ## 主要接口
 
@@ -196,7 +244,11 @@ $env:DASHSCOPE_API_KEY="sk-..."
 | `GET` | `/api/categories` | 分类列表 |
 | `GET` | `/api/foods` | 食物列表 |
 | `GET` | `/api/foods/{id}` | 食物详情、营养卡片、亮点与来源 |
-| `POST` | `/api/assistant/chat` | AI 营养问答 |
+| `POST` | `/api/assistant/chat` | AI 营养问答（兼容旧请求，可带 `conversationId`） |
+| `GET` | `/api/assistant/conversations` | 当前用户的会话列表（分页） |
+| `POST` | `/api/assistant/conversations` | 新建空会话 |
+| `DELETE` | `/api/assistant/conversations/{id}` | 删除会话及其消息 |
+| `GET` | `/api/assistant/conversations/{id}/messages` | 会话消息（分页） |
 | `GET` | `/api/admin/categories` | 管理端分类列表 |
 | `POST` | `/api/admin/categories` | 新增分类 |
 | `PUT` | `/api/admin/categories/{id}` | 更新分类 |
@@ -214,6 +266,7 @@ AI 对话请求：
 ```json
 {
   "message": "西兰花有哪些营养亮点？",
+  "conversationId": 12,
   "history": [
     { "role": "user", "content": "上一轮问题" },
     { "role": "assistant", "content": "上一轮回答" }
@@ -221,17 +274,38 @@ AI 对话请求：
 }
 ```
 
+- `conversationId` 可省略：旧客户端行为保持不变，后端自动创建会话并在响应中返回新 ID。
+- 带上 `conversationId` 即连续对话；服务端优先使用数据库中的历史，`history` 仅在会话暂无消息时兜底。
+- 会话归属通过 `X-User-Id` 请求头校验；前端会在 localStorage 生成并持久化匿名 UUID。
+- 访问他人的会话返回 `403`，会话不存在返回 `404`。
+
 AI 对话响应：
 
 ```json
 {
   "reply": "西兰花每 100g 含……",
   "mode": "database",
-  "suggestions": [
-    "高蛋白的食物有哪些？"
-  ]
+  "suggestions": ["高蛋白的食物有哪些？"],
+  "citations": [
+    {
+      "documentId": "food:1",
+      "title": "西兰花的营养成分",
+      "source": "USDA SR Legacy",
+      "url": "",
+      "snippet": "每 100g 维生素 C 含量……",
+      "score": 1.0,
+      "kind": "food",
+      "reviewStatus": "approved",
+      "version": "1"
+    }
+  ],
+  "conversationId": 12,
+  "assistantMessageId": 34,
+  "intent": "food_detail"
 }
 ```
+
+回答没有足够证据时，`citations` 为空且正文会明确说明「知识库中没有找到足够依据」，不会补造数值。
 
 ## 数据模型
 
@@ -246,6 +320,10 @@ AI 对话响应：
 | `food_category` | 食物分类字典 |
 | `data_source` | 数据来源字典 |
 | `rule_source` | 营养声称判定标准 |
+| `ai_conversation` | AI 会话：用户、标题、创建与更新时间 |
+| `ai_message` | AI 消息：角色、正文、引用 JSON、回答模式与状态 |
+
+AI 会话表由 [V2__ai_conversation.sql](values-java/src/main/resources/db/migration/V2__ai_conversation.sql) 创建，`ai_message` 通过外键级联删除。
 
 两个视图：
 
@@ -274,9 +352,12 @@ cd values-java
 mvn -q -DskipTests compile
 mvn test
 
-# Python 服务
+# Python 服务与测试
 cd values-python
 python -m food_nutrition ai-serve
+python -m food_nutrition rag-index --rebuild
+python -m food_nutrition rag-search "蛋白质有什么作用？"
+python -m unittest discover -s tests -t .
 python -m food_nutrition images-check
 ```
 
