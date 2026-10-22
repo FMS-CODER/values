@@ -2,29 +2,36 @@ package ming.valuesjava.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import ming.valuesjava.common.ApiException;
 import ming.valuesjava.dto.AssistantChatRequest;
 import ming.valuesjava.dto.AssistantChatResponse;
 
 /**
- * AI 助手接口（占位实现）。
+ * AI 助手接口：把请求转发给 Python AI 服务。
  *
- * 为什么先给占位而不是直接返回模型答案：
- * Python 侧的 LangGraph 服务尚未接入，此时若编造一段「营养建议」，
- * 用户会把它当成经过核对的数据；这里明确返回 mode=placeholder 与说明文案，
- * 前端据此展示「演示模式」，把「界面已就绪、服务未接入」这件事表达清楚。
+ * 为什么不让前端直接调 Python：
+ * 浏览器只认识 8080 上的 Java 服务，鉴权、CORS 与输入长度校验都集中在这里；
+ * 换模型或改 Python 端口时前端不需要重新发版。
  *
- * 接入方式：保持本接口的请求/响应结构不变，把本类的方法体替换为
- * 调用 Python AI 服务（LangGraph）的客户端即可，前端无需改动。
+ * 降级策略：Python 服务未启动或调用失败时返回 mode=placeholder，
+ * 前端沿用「演示模式」提示，而不是让请求直接报错、把页面变成不可用。
  */
 @RestController
 @RequestMapping("/api/assistant")
 public class AssistantController {
+
+    private static final Logger log = LoggerFactory.getLogger(AssistantController.class);
 
     /** 与前端输入框上限一致：过长的输入既无意义，也会放大后续模型调用的成本 */
     private static final int MAX_MESSAGE_LENGTH = 1000;
@@ -33,12 +40,25 @@ public class AssistantController {
     private static final int MAX_HISTORY_SIZE = 20;
 
     private static final String PLACEHOLDER_REPLY = """
-            AI 助手尚未接入服务。
+            AI 营养服务暂时不可用。
 
-            这个页面目前用于确认交互与布局。等 Python 侧的 LangGraph 服务接入后，\
-            会基于食物营养库回答，并给出可核对的营养数值。
+            请确认 Python AI 服务已启动（默认 http://127.0.0.1:8000），然后再试一次。
+            你也可以先回到首页，查看每种食物每 100g 的营养成分与营养亮点。""";
 
-            现在可以先浏览「食物」，查看每种食物每 100g 的营养成分与营养亮点。""";
+    private final RestClient pythonClient;
+
+    public AssistantController(
+            @Value("${app.assistant.python-base-url:http://127.0.0.1:8000}") String pythonBaseUrl) {
+        // 本机调用，连接超时给短一些；模型生成可能较慢，读超时留足 30 秒
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(2_000);
+        requestFactory.setReadTimeout(30_000);
+
+        this.pythonClient = RestClient.builder()
+                .baseUrl(pythonBaseUrl)
+                .requestFactory(requestFactory)
+                .build();
+    }
 
     private static final List<String> SUGGESTIONS = List.of(
             "西兰花有哪些营养亮点？",
@@ -48,6 +68,20 @@ public class AssistantController {
     @PostMapping("/chat")
     public AssistantChatResponse chat(@RequestBody AssistantChatRequest request) {
         validate(request);
+
+        try {
+            AssistantChatResponse response = pythonClient.post()
+                    .uri("/api/assistant/chat")
+                    .body(request)
+                    .retrieve()
+                    .body(AssistantChatResponse.class);
+            if (response != null) {
+                return response;
+            }
+            log.warn("Python AI 服务返回空响应，使用占位回复");
+        } catch (RestClientException ex) {
+            log.warn("调用 Python AI 服务失败，使用占位回复：{}", ex.getMessage());
+        }
 
         return new AssistantChatResponse(PLACEHOLDER_REPLY, "placeholder", SUGGESTIONS);
     }

@@ -14,11 +14,8 @@ const router = createRouter({
           name: 'home',
           component: HomeView,
         },
-        {
-          path: 'foods',
-          name: 'foods',
-          component: () => import('@/views/FoodView.vue'),
-        },
+        // 食物页与首页内容重复，统一由首页承载；保留旧地址跳转，避免历史链接失效
+        { path: 'foods', redirect: '/' },
         {
           path: 'foods/:id',
           name: 'food-detail',

@@ -6,8 +6,9 @@ export interface ChatMessage {
 }
 
 /**
- * mode 由后端给出：当前固定为 'placeholder'，表示 AI 服务（LangGraph）尚未接入。
- * 前端只按值透传与展示，不写死判断结果，接入真实模型后后端换值即可。
+ * mode 由后端给出：'llm' 表示模型生成，'database' 表示直接查营养库，
+ * 'placeholder' 表示 Python AI 服务不可用时的降级回复。
+ * 前端只按值透传与展示，不写死判断结果。
  */
 export interface AssistantReply {
   reply: string

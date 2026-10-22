@@ -13,7 +13,7 @@ import {
 import { fetchFoodDetail } from '@/services/food'
 import { HttpError } from '@/services/http'
 import { FOOD_DATA_CENTRAL_URL, NUTRIENT_RULE_URL } from '@/constants/external-links'
-import type { FoodDetail } from '@/types/food'
+import type { FoodDetail, NutrientTile } from '@/types/food'
 import { categoryTone } from '@/utils/category-tone'
 import { NUTRIENT_GROUPS, nutrientGroupTone } from '@/utils/nutrient-tone'
 import { handleFoodImageError, resolveFoodImage } from '@/utils/image'
@@ -38,6 +38,20 @@ const imageSrc = computed(() => resolveFoodImage(food.value?.imageUrl ?? null))
 const energyTile = computed(
   () => food.value?.nutrientTiles.find((item) => item.code === 'ENERGY') ?? null,
 )
+
+/**
+ * 首屏右侧的关键营养速览：取日常最常看的四项，把卡片右侧的横向空白填起来。
+ * 数据同样来自 nutrientTiles，缺失的项直接跳过，不补 0。
+ */
+const HERO_STAT_CODES = ['PROTEIN', 'FAT', 'CARBOHYDRATE', 'FIBER']
+
+const heroStats = computed(() => {
+  const tiles = food.value?.nutrientTiles ?? []
+
+  return HERO_STAT_CODES.map((code) => tiles.find((item) => item.code === code)).filter(
+    (item): item is NutrientTile => item !== undefined,
+  )
+})
 
 /**
  * 详情页营养素按 group 分组展示。
@@ -91,9 +105,12 @@ watch(() => route.params.id, loadDetail, { immediate: true })
   <div class="page detail-page">
     <template v-if="food">
       <nav class="detail-breadcrumb" aria-label="面包屑">
-        <RouterLink to="/foods">食物百科</RouterLink>
+        <RouterLink to="/">首页</RouterLink>
         <ChevronRight aria-hidden="true" />
-        <span>{{ food.name }}</span>
+        <!-- 分类同样来自当前食物数据，避免把所有详情页写成同一套固定文案 -->
+        <span>{{ food.categoryName }}</span>
+        <ChevronRight aria-hidden="true" />
+        <span class="detail-breadcrumb__current">{{ food.name }}</span>
       </nav>
 
       <section class="detail-hero">
@@ -102,8 +119,8 @@ watch(() => route.params.id, loadDetail, { immediate: true })
             class="detail-hero__image"
             :src="imageSrc"
             :alt="food.name"
-            width="176"
-            height="176"
+            width="220"
+            height="150"
             @error="handleFoodImageError"
           />
         </div>
@@ -134,6 +151,19 @@ watch(() => route.params.id, loadDetail, { immediate: true })
             <span class="detail-energy__value">{{ energyTile?.amount ?? '—' }}</span>
             <span class="detail-energy__unit">{{ energyTile?.unit ?? '' }}</span>
             <span class="detail-energy__label">每 100g 热量</span>
+          </div>
+        </div>
+
+        <!-- 右侧关键营养速览：与左侧热量块呼应，避免大卡片右侧留出大片空白 -->
+        <div v-if="heroStats.length" class="detail-hero__stats">
+          <p class="detail-hero__stats-title">关键营养 · 每 100g</p>
+          <div class="detail-hero__stats-grid">
+            <div v-for="item in heroStats" :key="item.code" class="hero-stat">
+              <span class="hero-stat__name">{{ item.name }}</span>
+              <span class="hero-stat__value">
+                {{ item.amount }}<em>{{ item.unit }}</em>
+              </span>
+            </div>
           </div>
         </div>
       </section>
@@ -284,9 +314,9 @@ watch(() => route.params.id, loadDetail, { immediate: true })
             </a>
           </section>
 
-          <RouterLink to="/foods" class="detail-back">
+          <RouterLink to="/" class="detail-back">
             <ArrowLeft aria-hidden="true" />
-            返回食物百科
+            返回首页
           </RouterLink>
         </aside>
       </div>
@@ -312,7 +342,7 @@ watch(() => route.params.id, loadDetail, { immediate: true })
     <div v-else-if="notFound" class="food-empty">
       <h3>未找到该食物</h3>
       <p>它可能已被移除，或链接地址不正确</p>
-      <RouterLink to="/foods" class="empty-link">返回食物百科</RouterLink>
+      <RouterLink to="/" class="empty-link">返回首页</RouterLink>
     </div>
   </div>
 </template>
